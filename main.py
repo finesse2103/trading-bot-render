@@ -11,9 +11,9 @@ CHAT_ID = os.getenv("CHAT_ID")
 
 # Команда /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("✅ Бот работает и готов отправлять сигналы!")
+    await update.message.reply_text("✅ Бот запущен и готов присылать сигналы!")
 
-# Обработчик команды !сигнал (тест)
+# Команда /signal (латиницей!)
 async def signal(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "⚡️ Валютная пара: `EUR/USD`\n"
@@ -25,10 +25,11 @@ async def signal(update: Update, context: ContextTypes.DEFAULT_TYPE):
 def main():
     application = Application.builder().token(BOT_TOKEN).build()
 
+    # Обработка команд латиницей
     application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("сигнал", signal))
+    application.add_handler(CommandHandler("signal", signal))
 
-    # Запускаем без asyncio.run() — это устраняет ошибку Render
+    # Запуск без asyncio.run() — для Render
     application.run_polling()
 
 if __name__ == "__main__":
