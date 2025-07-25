@@ -1,44 +1,35 @@
-import logging
-import os
+import asyncio
 from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
+from telegram.ext import Application, CommandHandler, ContextTypes
 from dotenv import load_dotenv
+import os
 
-# Загружаем переменные окружения
 load_dotenv()
+
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
-# Включаем логирование
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
-
-# Обработка команды /start
+# Команда /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Бот запущен и готов к работе!")
+    await update.message.reply_text("✅ Бот работает и готов отправлять сигналы!")
 
-# Обработка команды !сигнал
-async def handle_signal(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.message.text.lower() == "!сигнал":
-        await update.message.reply_text(
-            "⚡️ Валютная пара: EUR/USD\n"
-            "✅ Сигнал: ВВЕРХ\n"
-            "✅ Соглашение открываем до: 15:45"
-        )
+# Обработчик команды !сигнал (тест)
+async def signal(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "⚡️ Валютная пара: `EUR/USD`\n"
+        "✅ Сигнал: ВВЕРХ\n"
+        "✅ Соглашение открываем до: 15:27",
+        parse_mode="Markdown"
+    )
 
-# Запуск бота
-async def main():
-    application = ApplicationBuilder().token(BOT_TOKEN).build()
+def main():
+    application = Application.builder().token(BOT_TOKEN).build()
 
     application.add_handler(CommandHandler("start", start))
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_signal))
+    application.add_handler(CommandHandler("сигнал", signal))
 
-    print("✅ Бот запущен...")
-    await application.run_polling()
+    # Запускаем без asyncio.run() — это устраняет ошибку Render
+    application.run_polling()
 
-# Точка входа
-if __name__ == '__main__':
-    import asyncio
-    asyncio.run(main())
+if __name__ == "__main__":
+    main()
